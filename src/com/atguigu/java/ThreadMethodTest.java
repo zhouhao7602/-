@@ -13,11 +13,68 @@ package com.atguigu.java;
 * 10.isAlive()：判断当前线程是否存活
  * */
 public class ThreadMethodTest {
+	public static void main(String[] args) {
+		//创建一个线程对象
+		HelloThread my1 = new HelloThread();
+		
+		//给子线程设置线程名
+		my1.setName("子线程");
+		//给主线程设置线程名，由于主线程main()的类没有继承Thread类，要先获取线程
+		Thread.currentThread().setName("主线程main()");
+		
+		//运行线程
+		my1.start();
+		
+		
+		//主线程main()的代码，
+		for (int i = 0; i < 100; i++) {
+			if (i % 2 != 0) {
+				//当主线程3的时候，每间隔一秒执行一次。方法中的1000是毫秒
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println(Thread.currentThread().getName() + ":" + i);
+			}
+			
+		}
+	}
+	
 
 }
 
 
 //创建一个Thread类的了类
 class HelloThread extends Thread {
-	
+	@Override
+	public void run() {
+		for (int i = 0; i < 100; i++) {
+			if (i % 2 == 0) {
+				try {
+					sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println(getName() + ":" + i);
+			}
+			
+			//当子线程i=20的时候就释放执行权，理论上下一次由别的线程运行，但释放执行权之后当前线程也有可能再次抢到
+			if (i == 20) {
+				this.yield();
+			}
+			//当子线程2的时候进入门等待,由别的线程执行完之后再执行
+			if (i == 2) {
+				try {
+					join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	}
 }
